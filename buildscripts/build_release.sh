@@ -48,7 +48,13 @@ IFS="."
 PRE_VERSION=($VERSION)
 IFS=$OLDIFS
 
-PRE_VERSION="${PRE_VERSION[0]}.${PRE_VERSION[1]}.$((PRE_VERSION[2] + 1))-pre"
+if [[ ${PRE_VERSION[2]} == *-* ]]; then
+	PRE_VERSION="${PRE_VERSION[0]}.${PRE_VERSION[1]}.$((PRE_VERSION[2]))-pre"
+elif [[ ${PRE_VERSION[2]} -eq 0 ]]; then
+	PRE_VERSION="${PRE_VERSION[0]}.$((PRE_VERSION[1] + 1)).0-pre"
+else
+	PRE_VERSION="${PRE_VERSION[0]}.${PRE_VERSION[1]}.$((PRE_VERSION[2] + 1))-pre"
+fi
 
 BRANCH=${BRANCH=master}
 
@@ -97,7 +103,7 @@ SOURCE_RELEASE_DIR=$SOURCE_DIR/release
 CDN_OUTPUT_DIR=$ROOT_DIR/$CDN_OUTPUT_NAME
 
 # Repositories that are a part of the Dojo Toolkit
-ALL_REPOS="demos dijit dojo dojox util"
+ALL_REPOS="demos dijit dojo dojox themes util"
 
 zip="zip -dd -ds 1m -rq"
 
@@ -122,6 +128,7 @@ fi
 
 echo "This is an internal Dojo release script. You probably meant to run build.sh!"
 echo "If you want to create Dojo version $VERSION from branch $BRANCH, press 'y'."
+echo "The source version will be updated to $PRE_VERSION after the build."
 echo "(You will have an opportunity to abort pushing upstream later on if something"
 echo "goes wrong.)"
 read -s -n 1
